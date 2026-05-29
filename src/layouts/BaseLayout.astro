@@ -2,6 +2,7 @@
 import '../styles/layout-style.css';
 import '../styles/posts-style.css';
 import SEO from '../components/SEO.astro';
+import { Font } from 'astro:assets';
 
 interface Props {
     title?: string;
@@ -13,8 +14,8 @@ interface Props {
 }
 
 const {
-    title = 'Prathith Chivukula',
-    description = 'Writing on programming, politics, history, and data.',
+    title = 'Disaggregate',
+    description = "Breaking down numbers, narratives, and ideas.",
     type = 'website',
     image,
     publishedTime,
@@ -37,8 +38,9 @@ const {
         tags={tags}
     />
     <meta name="generator" content={Astro.generator} />
-    <link rel="alternate" type="application/rss+xml" title="Prathith Chivukula" href="/rss.xml" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <Font cssVariable="--font-spectral" preload />
+    <Font cssVariable="--font-ibm-plex-sans" preload />
+    <link rel="alternate" type="application/rss+xml" title="Disaggregate" href="/rss.xml" />
     <!-- Runs synchronously before first paint to set theme and suppress transitions -->
     <script is:inline>
         document.documentElement.dataset.theme = localStorage.getItem('theme') || 'light';
@@ -107,8 +109,6 @@ const {
             <nav class="footer-links" aria-label="Social links">
                 <a href="https://github.com/prethith" target="_blank" rel="noopener">GitHub</a>
                 <span aria-hidden="true">·</span>
-                <!-- <a href="https://twitter.com/prathith" target="_blank" rel="noopener">Twitter</a>
-                <span aria-hidden="true">·</span> -->
                 <a href="/rss.xml" class="footer-rss">
                     <svg viewBox="0 0 14 14" width="11" height="11" aria-hidden="true" focusable="false">
                         <circle cx="2.5" cy="11.5" r="1.5" fill="currentColor" />

@@ -6,7 +6,7 @@ export async function GET(context) {
         .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
     return rss({
-        title: 'Prathith Chivukula',
+        title: 'Disaggregate',
         description: 'Writing on programming, politics, history, and data.',
         site: context.site,
         items: posts.map(post => ({

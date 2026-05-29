@@ -1,6 +1,5 @@
 ---
-const SITE_NAME = 'Prathith Chivukula';
-const AUTHOR = 'Prathith Chivukula';
+const SITE_NAME = 'Disaggregate';
 const LOCALE = 'en_US';
 const DEFAULT_OG = '/og-default.png';
 
@@ -32,7 +31,6 @@ const schema = type === 'article'
         headline: title,
         description,
         image: ogImage.href,
-        author: { '@type': 'Person', name: AUTHOR },
         ...(publishedTime && { datePublished: publishedTime.toISOString() }),
         ...(tags.length && { keywords: tags.join(', ') }),
         mainEntityOfPage: { '@type': 'WebPage', '@id': canonical.href },
@@ -43,7 +41,6 @@ const schema = type === 'article'
         name: SITE_NAME,
         url: Astro.site?.href,
         description,
-        author: { '@type': 'Person', name: AUTHOR },
     };
 ---
 
@@ -51,6 +48,7 @@ const schema = type === 'article'
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
 <meta name="robots" content="index, follow" />
+<meta name="google-site-verification" content="5Y7HMTp0glAgSV6kOzxeeNJs3pq7wNs9JjdEnS-NbtQ" />
 
 <meta property="og:type" content={type} />
 <meta property="og:site_name" content={SITE_NAME} />
