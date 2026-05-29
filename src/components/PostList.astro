@@ -32,10 +32,7 @@ const filterTags = Object.keys(tagCounts).sort((a, b) => a.localeCompare(b));
     <div class="tag-filter" role="group" aria-label="Filter by topic">
         <button class="tag-btn active" data-tag="all">all</button>
         {filterTags.map(tag => (
-            <>
-                <span class="tag-sep" aria-hidden="true">·</span>
-                <button class="tag-btn" data-tag={tag}>{tag}<sup class="tag-btn-count">{tagCounts[tag]}</sup></button>
-            </>
+            <button class="tag-btn" data-tag={tag}>{tag}<span class="tag-btn-count">{tagCounts[tag]}</span></button>
         ))}
     </div>
 )}
