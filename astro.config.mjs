@@ -6,8 +6,7 @@ import remarkGfm from 'remark-gfm';
 
 // https://astro.build/config
 export default defineConfig({
-  // TODO: set this to your production domain (used for RSS + canonical URLs).
-  site: 'https://example.com',
+  site: 'https://disaggregate.pages.dev',
   // Self-hosted, build-time-optimized fonts (downloaded & served locally, no Google CDN).
   fonts: [
     {
