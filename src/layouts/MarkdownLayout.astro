@@ -1,0 +1,158 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+interface Props {
+    title: string;
+    description: string;
+    pubDate: Date;
+    tags: string[];
+    id: string;
+}
+
+const { title, description, pubDate, tags, id } = Astro.props;
+
+const allPosts = (await getCollection('posts'))
+    .sort((a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf());
+
+const currentIndex = allPosts.findIndex(p => p.id === id);
+const prev = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+const next = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
+
+const formattedDate = pubDate.toLocaleDateString('en-US', {
+    month: 'short',
+    year: 'numeric',
+});
+---
+
+<BaseLayout
+    title={title}
+    description={description}
+    type="article"
+    publishedTime={pubDate}
+    tags={tags}
+>
+    <article class="post-article">
+        <header class="post-header">
+            <h1 class="post-title">{title}</h1>
+            <p class="post-description">{description}</p>
+            <div class="post-meta">
+                <span class="post-tags">
+                    {tags.map(tag => (
+                        <a href={`/writing/tag/${tag}`} class="post-tag" data-tag={tag}>{tag}</a>
+                    ))}
+                </span>
+                <time>{formattedDate}</time>
+            </div>
+        </header>
+
+        <div class="post-body">
+            <slot />
+        </div>
+
+        <nav class="post-nav" aria-label="Post navigation">
+            {prev ? (
+                <a href={`/writing/${prev.id}`} class="post-nav-link" title={prev.data.title}>prev</a>
+            ) : <span class="post-nav-link post-nav-link--empty" aria-hidden="true" />}
+
+            <a href="/writing" class="post-nav-home">all writing</a>
+
+            {next ? (
+                <a href={`/writing/${next.id}`} class="post-nav-link post-nav-link--next" title={next.data.title}>
+                    next
+                </a>
+            ) : <span class="post-nav-link post-nav-link--empty" aria-hidden="true" />}
+        </nav>
+    </article>
+
+    <script>
+        const refs = document.querySelectorAll<HTMLAnchorElement>('a[data-footnote-ref]');
+
+        if (refs.length) {
+            const isDesktop = () =>
+                window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+            // Pull a footnote's HTML by following the ref's href, minus the backref arrow.
+            const contentOf = (a: HTMLAnchorElement) => {
+                const id = decodeURIComponent(a.getAttribute('href')!.slice(1));
+                const li = document.getElementById(id);
+                if (!li) return '';
+                const clone = li.cloneNode(true) as HTMLElement;
+                clone.querySelectorAll('.data-footnote-backref').forEach(b => b.remove());
+                return clone.innerHTML;
+            };
+
+            // --- Desktop tooltip ---
+            const tip = document.createElement('div');
+            tip.className = 'fn-tooltip';
+            tip.setAttribute('role', 'tooltip');
+            document.body.appendChild(tip);
+
+            let hideTimer: ReturnType<typeof setTimeout>;
+            const showTip = (a: HTMLAnchorElement) => {
+                clearTimeout(hideTimer);
+                tip.innerHTML = contentOf(a);
+                tip.classList.add('visible');
+                const r = a.getBoundingClientRect();
+                const t = tip.getBoundingClientRect();
+                let left = r.left + r.width / 2 - t.width / 2;
+                left = Math.max(8, Math.min(left, window.innerWidth - t.width - 8));
+                let top = r.top - t.height - 8;
+                if (top < 8) top = r.bottom + 8;
+                tip.style.left = `${left}px`;
+                tip.style.top = `${top}px`;
+            };
+            const hideTip = () => {
+                hideTimer = setTimeout(() => tip.classList.remove('visible'), 80);
+            };
+            tip.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+            tip.addEventListener('mouseleave', hideTip);
+
+            // --- Mobile drawer ---
+            const backdrop = document.createElement('div');
+            backdrop.className = 'fn-drawer-backdrop';
+            const drawer = document.createElement('div');
+            drawer.className = 'fn-drawer';
+            drawer.setAttribute('role', 'dialog');
+            drawer.setAttribute('aria-modal', 'true');
+            drawer.innerHTML =
+                '<div class="fn-drawer-header"><span class="fn-drawer-label"></span>' +
+                '<button class="fn-drawer-close" aria-label="Close note">' +
+                '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">' +
+                '<path d="M3 3 L13 13 M13 3 L3 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>' +
+                '</svg></button></div><div class="fn-drawer-body"></div>';
+            document.body.append(backdrop, drawer);
+
+            const dBody = drawer.querySelector<HTMLElement>('.fn-drawer-body')!;
+            const dLabel = drawer.querySelector<HTMLElement>('.fn-drawer-label')!;
+            const openDrawer = (a: HTMLAnchorElement, n: number) => {
+                dBody.innerHTML = contentOf(a);
+                dLabel.textContent = `Note ${n}`;
+                backdrop.classList.add('open');
+                drawer.classList.add('open');
+            };
+            const closeDrawer = () => {
+                backdrop.classList.remove('open');
+                drawer.classList.remove('open');
+            };
+            drawer.querySelector('.fn-drawer-close')!.addEventListener('click', closeDrawer);
+            backdrop.addEventListener('click', closeDrawer);
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape') closeDrawer();
+            });
+
+            refs.forEach((a, i) => {
+                a.addEventListener('mouseenter', () => { if (isDesktop()) showTip(a); });
+                a.addEventListener('mouseleave', () => { if (isDesktop()) hideTip(); });
+                a.addEventListener('focus', () => { if (isDesktop()) showTip(a); });
+                a.addEventListener('blur', () => { if (isDesktop()) hideTip(); });
+                a.addEventListener('click', e => {
+                    if (!isDesktop()) {
+                        e.preventDefault();
+                        openDrawer(a, i + 1);
+                    }
+                });
+            });
+        }
+    </script>
+</BaseLayout>

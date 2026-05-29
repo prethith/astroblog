@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostList from '../../components/PostList.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = (await getCollection('posts'))
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout title="Writing">
+    <h1>Writing</h1>
+    <PostList posts={allPosts} variant="full" />
+</BaseLayout>

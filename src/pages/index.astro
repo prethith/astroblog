@@ -1,17 +1,27 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostList from '../components/PostList.astro';
+import Featured from '../components/Featured.astro';
+import { getCollection } from 'astro:content';
 
+const latestPosts = (await getCollection('posts'))
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+    .slice(0, 5);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout>
+    <article class="content">
+        <p>I write about programming, politics, history, and data &mdash; usually
+            whatever I&rsquo;ve been reading or building lately.</p>
+        <p>Recent posts are below; the full archive lives on the
+            <a href="/writing">writing</a> page.</p>
+    </article>
+
+    <Featured
+        title="China and the sea: a story of power, faith and appetite"
+        url="https://aeon.co/essays/china-and-the-sea-a-story-of-power-faith-and-appetite"
+        source="aeon.co"
+    />
+
+    <PostList posts={latestPosts} variant="compact" />
+</BaseLayout>

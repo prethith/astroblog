@@ -1,0 +1,475 @@
+/* ============================================================
+   TAG FILTER
+   ============================================================ */
+.tag-filter {
+    grid-column: narrow-start / narrow-end;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.55rem;
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+}
+
+.tag-sep {
+    color: var(--rule);
+    user-select: none;
+}
+
+.tag-btn {
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    text-transform: lowercase;
+    transition: color 0.15s ease;
+}
+
+.tag-btn:hover { color: var(--text); }
+
+.tag-btn.active {
+    color: var(--text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.tag-btn-count {
+    margin-left: 0.1em;
+    font-size: 0.72em;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+}
+
+
+/* ============================================================
+   POST LIST  (posts page outer container)
+   ============================================================ */
+.post-list {
+    grid-column: wide-start / narrow-end;
+    display: grid;
+    grid-template-columns: subgrid;
+    align-items: start;
+    margin-top: calc(var(--space) * 1.5);
+    row-gap: calc(var(--space) * 1.5);
+}
+
+
+/* ============================================================
+   YEAR GROUP
+   ============================================================ */
+.post-list-group {
+    grid-column: wide-start / narrow-end;
+    display: grid;
+    grid-template-columns: subgrid;
+    align-items: start;
+}
+
+.post-list-group[hidden] { display: none; }
+
+.post-list-group-label {
+    grid-column: wide-start / narrow-start;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--muted);
+    text-align: right;
+    padding-right: 1rem;
+}
+
+.post-list-group .post-list-year {
+    padding-top: 0.6rem;
+}
+
+/* ============================================================
+   POST ARTICLE
+   ============================================================ */
+.post-article {
+    grid-column: full-start / full-end;
+    display: grid;
+    grid-template-columns: subgrid;
+}
+
+.post-header {
+    grid-column: narrow-start / narrow-end;
+    padding-bottom: calc(var(--space) * 1.25);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: calc(var(--space) * 1.5);
+}
+
+.post-title {
+    font-size: var(--text-xl);
+    /* font-family: var(--font-mono); */
+    font-weight: 400;
+    /* font-style: italic; */
+    line-height: 1.25;
+    text-wrap: balance;
+    margin-bottom: 0.4em;
+}
+
+.post-description {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    /* Half-step above --text-sm: a dek should read slightly larger than meta
+       but stay below body. The only off-scale size, by design. */
+    font-size: clamp(0.9375rem, 0.91rem + 0.14vw, 1rem); /* ~15 → 16px */
+    margin-bottom: 0.75rem;
+}
+
+.post-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--muted);
+}
+
+.post-tags {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.post-tag {
+    padding: 1px 5px;
+    border-radius: 2px;
+    color: var(--text);
+    background-color: var(--tag-bg, var(--accent-3));
+}
+
+
+/* ============================================================
+   POST BODY  (subgrid for full-bleed images)
+   ============================================================ */
+.post-body {
+    grid-column: full-start / full-end;
+    display: grid;
+    grid-template-columns: subgrid;
+}
+
+.post-body > * {
+    grid-column: narrow-start / narrow-end;
+    margin-bottom: 1em;
+}
+
+.post-body > *:last-child {
+    margin-bottom: 0;
+}
+
+.post-body > .full-bleed {
+    grid-column: wide-start / wide-end;
+}
+
+.post-body h2 {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    font-style: normal;
+    font-family: var(--font-mono);
+    margin-top: calc(var(--space) * 1.5);
+    margin-bottom: 0.35em;
+}
+
+.post-body h3 {
+    font-size: var(--text-base);
+    font-weight: 500;
+    font-family: var(--font-mono);
+    margin-top: var(--space);
+    margin-bottom: 0.35em;
+}
+
+.post-body a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* ---- Figures & captions ---- */
+.post-body figure {
+    margin: var(--space) 0;
+}
+
+.post-body figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 3px;
+}
+
+.post-body figcaption {
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    color: var(--muted);
+    text-align: center;
+}
+
+.figure-credit {
+    opacity: 0.75;
+}
+
+.post-body p + p {
+    margin-top: 0;
+}
+
+/* ---- Blockquote ---- */
+.post-body blockquote {
+    padding-left: 1rem;
+    border-left: 2px solid var(--rule);
+    color: var(--muted);
+    font-style: italic;
+}
+
+.post-body blockquote p {
+    margin-bottom: 0.4em;
+}
+
+/* ---- Horizontal rule ---- */
+.post-body hr {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: calc(var(--space) * 1.5) 0;
+}
+
+
+/* ============================================================
+   FOOTNOTES
+   ============================================================ */
+/* Inline reference marker — rendered as [1], [2]… in mono */
+.post-body [data-footnote-ref] {
+    font-family: var(--font-mono);
+    font-size: 0.72em;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--muted);
+    padding: 0 0.1em;
+    transition: color 0.15s ease;
+}
+
+.post-body [data-footnote-ref]::before { content: "["; }
+.post-body [data-footnote-ref]::after  { content: "]"; }
+
+.post-body [data-footnote-ref]:hover,
+.post-body [data-footnote-ref]:focus-visible { color: var(--text); }
+
+/* Footnotes list at the foot of the article */
+.post-body .footnotes {
+    grid-column: narrow-start / narrow-end;
+    margin-top: calc(var(--space) * 2);
+    padding-top: var(--space);
+    border-top: 1px solid var(--rule);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+.post-body .footnotes h2.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.post-body .footnotes ol {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.post-body .footnotes li {
+    margin-bottom: 0.6em;
+}
+
+.post-body .footnotes li:target {
+    background: var(--tag-bg, var(--accent-3));
+    border-radius: 3px;
+}
+
+.post-body .footnotes p {
+    margin: 0;
+    display: inline;
+}
+
+.post-body .data-footnote-backref {
+    text-decoration: none;
+    margin-left: 0.3em;
+    color: var(--muted);
+}
+
+.post-body .data-footnote-backref:hover { color: var(--text); }
+
+
+/* Desktop tooltip */
+.fn-tooltip {
+    position: fixed;
+    z-index: 50;
+    max-width: min(22rem, 90vw);
+    padding: 0.6rem 0.8rem;
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--text);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(4px);
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+}
+
+.fn-tooltip.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.fn-tooltip p { margin: 0; }
+.fn-tooltip a { text-decoration: underline; text-underline-offset: 3px; }
+.fn-tooltip .data-footnote-backref { display: none; }
+
+
+/* Mobile bottom drawer (Wikipedia-style) */
+.fn-drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s;
+    z-index: 60;
+}
+
+.fn-drawer-backdrop.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.fn-drawer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 61;
+    background: var(--bg);
+    border-top: 1px solid var(--rule);
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.2);
+    padding: 1rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    transform: translateY(100%);
+    transition: transform 0.25s ease;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.fn-drawer.open { transform: translateY(0); }
+
+.fn-drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--muted);
+}
+
+.fn-drawer-close {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--muted);
+    padding: 4px;
+    line-height: 0;
+    border-radius: 4px;
+}
+
+.fn-drawer-close:hover {
+    color: var(--text);
+    background: var(--rule);
+}
+
+.fn-drawer-body {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    color: var(--text);
+}
+
+.fn-drawer-body p { margin: 0; }
+.fn-drawer-body a { text-decoration: underline; text-underline-offset: 3px; }
+.fn-drawer-body .data-footnote-backref { display: none; }
+
+
+/* ============================================================
+   POST NAV  (prev / home / next)
+   ============================================================ */
+.post-nav {
+    grid-column: narrow-start / narrow-end;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1rem;
+    margin-top: calc(var(--space) * 2);
+    padding-top: var(--space);
+    border-top: 1px solid var(--rule);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+}
+
+.post-nav a {
+    width: fit-content;
+}
+
+.post-nav-home {
+    justify-self: center;
+}
+
+.post-nav-link,
+.post-nav-home {
+    color: var(--muted);
+    transition: color 0.15s ease;
+}
+
+.post-nav-link--next {
+    justify-self: end;
+}
+
+.post-nav-link--empty {
+    visibility: hidden;
+}
+
+.post-nav-link:hover,
+.post-nav-home:hover {
+    color: var(--text);
+}
+
+.post-nav-dir {
+    display: inline-block;
+}
+
+
+/* ============================================================
+   RESPONSIVE — ≤ 1024px
+   ============================================================ */
+@media (max-width: 1024px) {
+    .post-list {
+        grid-column: narrow-start / narrow-end;
+        grid-template-columns: 1fr;
+    }
+
+    .post-list-group {
+        grid-column: 1;
+        grid-template-columns: 1fr;
+    }
+
+    .post-list-group-label {
+        grid-column: 1;
+        text-align: left;
+        padding-right: 0;
+        padding-top: 0;
+        padding-bottom: 0.35rem;
+    }
+}

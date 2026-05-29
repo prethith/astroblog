@@ -1,0 +1,101 @@
+---
+interface Props {
+    label?: string;
+    title: string;
+    url: string;
+    source?: string;
+    /** Optional thumbnail (e.g. for a photo of the week). */
+    image?: string;
+}
+
+const { label = "link of the week", title, url, source, image } = Astro.props;
+
+const external = /^https?:\/\//.test(url);
+---
+
+<a
+    class="featured"
+    href={url}
+    target={external ? "_blank" : undefined}
+    rel={external ? "noopener noreferrer" : undefined}
+>
+    {
+        image && (
+            <span class="featured-thumb">
+                <img src={image} alt="" loading="lazy" decoding="async" />
+            </span>
+        )
+    }
+    <span class="featured-text">
+        <span class="featured-label">{label}</span>
+        <span class="featured-title">{title}</span>
+        {source && <span class="featured-source">{source} &nearr;</span>}
+    </span>
+</a>
+
+<style>
+    .featured {
+        display: flex;
+        gap: 1rem;
+        align-items: stretch;
+        margin-top: calc(var(--space) * 1.5);
+        padding: 0.9rem 1rem;
+        border: 1px solid var(--rule);
+        border-radius: 5px;
+        color: inherit;
+        transition:
+            border-color 0.15s ease,
+            background-color 0.15s ease;
+    }
+    .featured:hover {
+        color: var(--text);
+        border-color: transparent;
+        background-color: var(--accent-3);
+    }
+
+    .featured:hover .featured-label {
+        color: var(--text);
+    }
+    .featured-thumb {
+        flex: 0 0 auto;
+        width: 64px;
+        border-radius: 3px;
+        overflow: hidden;
+        background: var(--rule);
+    }
+
+    .featured-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .featured-text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        min-width: 0;
+    }
+
+    .featured-label {
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--muted);
+    }
+
+    .featured-title {
+        font-style: italic;
+        font-size: var(--text-base);
+        line-height: 1.3;
+        text-wrap: balance;
+    }
+
+    .featured-source {
+        font-family: var(--font-mono);
+        font-size: var(--text-sm);
+        color: var(--muted);
+    }
+</style>

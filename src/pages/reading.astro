@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { books, coverUrl } from '../data/books';
+
+const reading = books.filter(b => b.status === 'reading');
+const read = books.filter(b => b.status === 'read');
+
+const groups = [
+    { label: 'currently reading', items: reading },
+    { label: 'read', items: read },
+].filter(g => g.items.length > 0);
+---
+
+<BaseLayout title="Reading">
+    <h1>Reading</h1>
+
+    <article class="content">
+        <p>Books I&rsquo;m reading and have read. Covers via Open Library.</p>
+    </article>
+
+    {groups.map(group => (
+        <section class="reading-section">
+            <h2 class="reading-label">{group.label}</h2>
+            <ul class="book-grid">
+                {group.items.map(book => (
+                    <li class="book">
+                        <div class="book-cover">
+                            <img
+                                src={coverUrl(book, 'L')}
+                                alt={`Cover of ${book.title}`}
+                                loading="lazy"
+                                decoding="async"
+                            />
+                        </div>
+                        <div class="book-meta">
+                            <span class="book-title">{book.title}</span>
+                            <span class="book-author">{book.author}</span>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        </section>
+    ))}
+</BaseLayout>

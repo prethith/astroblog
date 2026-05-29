@@ -1,0 +1,136 @@
+---
+import '../styles/layout-style.css';
+import '../styles/posts-style.css';
+import SEO from '../components/SEO.astro';
+
+interface Props {
+    title?: string;
+    description?: string;
+    type?: 'website' | 'article';
+    image?: string;
+    publishedTime?: Date;
+    tags?: string[];
+}
+
+const {
+    title = 'Prathith Chivukula',
+    description = 'Writing on programming, politics, history, and data.',
+    type = 'website',
+    image,
+    publishedTime,
+    tags,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <SEO
+        title={title}
+        description={description}
+        type={type}
+        image={image}
+        publishedTime={publishedTime}
+        tags={tags}
+    />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="alternate" type="application/rss+xml" title="Prathith Chivukula" href="/rss.xml" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Runs synchronously before first paint to set theme and suppress transitions -->
+    <script is:inline>
+        document.documentElement.dataset.theme = localStorage.getItem('theme') || 'light';
+        document.documentElement.classList.add('no-transitions');
+        requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+                document.documentElement.classList.remove('no-transitions');
+            });
+        });
+    </script>
+</head>
+
+<body>
+
+    <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+        <symbol id="icon-sun" viewBox="0 -4 30 34">
+            <g transform="translate(0,-4)">
+                <circle cx="15" cy="15" r="6" fill="currentColor" />
+                <g stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <line x1="15" y1="1" x2="15" y2="5" />
+                    <line x1="15" y1="25" x2="15" y2="29" />
+                    <line x1="1" y1="15" x2="5" y2="15" />
+                    <line x1="25" y1="15" x2="29" y2="15" />
+                    <line x1="5" y1="5" x2="8" y2="8" />
+                    <line x1="22" y1="22" x2="25" y2="25" />
+                    <line x1="22" y1="8" x2="25" y2="5" />
+                    <line x1="5" y1="25" x2="8" y2="22" />
+                </g>
+            </g>
+        </symbol>
+        <symbol id="icon-moon" viewBox="0 0 30 30">
+            <path transform="translate(0,-3)" d="M15 5 A10 10 0 1 0 25 20 A7 7 0 1 1 15 5 Z" fill="currentColor" />
+        </symbol>
+        <symbol id="icon-chevron-down" viewBox="0 0 12 12">
+            <polyline points="2,4 6,8 10,4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+    </svg>
+
+    <nav class="grid">
+        <div class="navbar">
+            <a href="/" class="navbar-home">home</a>
+            <ul class="nav-links">
+                <li><a href="/writing">blog</a></li>
+                <li><a href="/reading">reading</a></li>
+                <li><a href="/photos">photos</a></li>
+                <li>
+                    <button data-theme-toggle class="theme-toggle" aria-label="Toggle theme">
+                        <svg class="theme-icon sun-icon">
+                            <use href="#icon-sun" />
+                        </svg>
+                        <svg class="theme-icon moon-icon">
+                            <use href="#icon-moon" />
+                        </svg>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="grid">
+        <slot />
+    </main>
+
+    <footer class="grid">
+        <div class="footer-inner">
+            <nav class="footer-links" aria-label="Social links">
+                <a href="https://github.com/prethith" target="_blank" rel="noopener">GitHub</a>
+                <span aria-hidden="true">·</span>
+                <!-- <a href="https://twitter.com/prathith" target="_blank" rel="noopener">Twitter</a>
+                <span aria-hidden="true">·</span> -->
+                <a href="/rss.xml" class="footer-rss">
+                    <svg viewBox="0 0 14 14" width="11" height="11" aria-hidden="true" focusable="false">
+                        <circle cx="2.5" cy="11.5" r="1.5" fill="currentColor" />
+                        <path d="M1 7.5 A6 6 0 0 1 7.5 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M1 3.5 A10 10 0 0 1 11.5 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    RSS
+                </a>
+            </nav>
+        </div>
+    </footer>
+
+    <script>
+        const root = document.documentElement;
+        document.querySelectorAll('[data-theme-toggle]').forEach(btn =>
+            btn.addEventListener('click', () => {
+                root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+                localStorage.setItem('theme', root.dataset.theme);
+            })
+        );
+    </script>
+
+</body>
+
+</html>

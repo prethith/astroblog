@@ -1,0 +1,591 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400..700;1,400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+
+
+/* ============================================================
+   TOKENS & THEME
+   ============================================================ */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+}
+
+:root {
+    --grid-wide: 900px;
+    --grid-narrow: 580px;
+
+    --bg: #fafafa;
+    --text: #1a1a1a;
+    --muted: #999;
+    --rule: #e0e0e0;
+
+    /* Serif body for long-form reading; monospace for structural chrome (nav, meta, code).
+       Swap --font-body to compare. Spectral (default) and Newsreader are the closest free
+       matches to Adobe Text — narrower and taller than Source Serif. */
+    --font-body: 'Spectral', Georgia, serif;
+    /* --font-body: 'STIX Two Text', serif; */
+    /* --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, monospace; */
+    --font-mono: 'IBM Plex Sans', sans-serif;
+
+    /* Fluid modular type scale — one token per step, ~Minor Third (×1.2).
+       Bounds in rem so they honour browser zoom. Never multiply these
+       ad-hoc; pick the nearest step so relative sizing stays consistent. */
+    --text-xs:   clamp(0.75rem,   0.722rem + 0.11vw, 0.8125rem); /* ~12 → 13px  bylines, fine print */
+    --text-sm:   clamp(0.875rem,  0.847rem + 0.11vw, 0.9375rem); /* ~14 → 15px  meta, nav, captions */
+    --text-base: clamp(1.0625rem, 1.006rem + 0.23vw, 1.1875rem); /* ~17 → 19px  body */
+    --text-lg:   clamp(1.25rem,   1.193rem + 0.23vw, 1.375rem);  /* ~20 → 22px  section headings */
+    --text-xl:   clamp(1.4375rem, 1.324rem + 0.45vw, 1.6875rem); /* ~23 → 27px  post / page title */
+
+    --space: 1.5rem;
+
+    /* pale pastels — legible on light bg with dark text */
+    --accent-1: #f9d5d8;
+    --accent-2: #fde0d0;
+    --accent-3: #fdf5d0;
+    --accent-4: #daefd4;
+    --accent-5: #ecddf5;
+
+    /* deepened pastels — used on hover over accented elements */
+    --accent-1-hover: #f2b5ba;
+    --accent-2-hover: #f9c9a8;
+    --accent-3-hover: #faeaa0;
+    --accent-4-hover: #bde0b4;
+    --accent-5-hover: #d9beed;
+}
+
+[data-theme="dark"] {
+    --bg: #18191c;
+    --text: #f0f0f0;
+    --muted: #7a7f88;
+    --rule: #2e3138;
+
+    --accent-1: #9d2f3f;
+    --accent-2: #a04a28;
+    --accent-3: #8a6f10;
+    --accent-4: #3f7035;
+    --accent-5: #6a3e8a;
+
+    --accent-1-hover: #b83a4d;
+    --accent-2-hover: #bc5830;
+    --accent-3-hover: #a08018;
+    --accent-4-hover: #4c8040;
+    --accent-5-hover: #7c4e9e;
+}
+
+
+/* ============================================================
+   BASE
+   ============================================================ */
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: 1.7;
+    min-height: 100dvh;
+    padding-top: var(--space);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    transition: background 0.25s ease, color 0.25s ease;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+p + p {
+    margin-top: 1em;
+}
+
+h1 {
+    font-size: var(--text-xl);
+    font-weight: 400;
+    /* font-style: italic; */
+    line-height: 1.25;
+    text-wrap: balance;
+    margin-bottom: 0.5em;
+}
+
+
+/* ============================================================
+   GRID
+   ============================================================ */
+.grid {
+    display: grid;
+    grid-template-columns:
+        [full-start] minmax(1.25rem, 1fr)
+        [wide-start] minmax(0, calc((var(--grid-wide) - var(--grid-narrow)) / 2))
+        [narrow-start] min(var(--grid-narrow), 100%)
+        [narrow-end] minmax(0, calc((var(--grid-wide) - var(--grid-narrow)) / 2))
+        [wide-end] minmax(1.25rem, 1fr) [full-end];
+    column-gap: 1rem;
+}
+
+.grid > * {
+    grid-column: narrow-start / narrow-end;
+}
+
+.full-bleed {
+    width: 100%;
+    grid-column: wide-start / wide-end;
+}
+
+
+/* ============================================================
+   NAV
+   ============================================================ */
+nav {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    margin-bottom: calc(var(--space) * 2);
+}
+
+nav.grid > * {
+    grid-column: narrow-start / narrow-end;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar a {
+    color: var(--text);
+    /* text-transform: uppercase; */
+}
+
+.navbar-home {
+    padding: 2px 4px;
+    border-radius: 2px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.navbar-home:hover {
+    background-color: var(--accent-1);
+    color: var(--text);
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.nav-links a {
+    padding: 5px;
+    border-radius: 2px;
+    transition: background-color 0.15s ease;
+}
+
+.nav-links a:hover {
+    color: var(--text);
+}
+
+.nav-links li:nth-child(1) a:hover { background-color: var(--accent-2); }
+.nav-links li:nth-child(2) a:hover { background-color: var(--accent-3); }
+.nav-links li:nth-child(3) a:hover { background-color: var(--accent-4); }
+
+.theme-toggle {
+    position: relative;
+    vertical-align: middle;
+    display: inline-flex;
+    width: 14px;
+    height: 14px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--muted);
+}
+
+.theme-toggle:hover {
+    color: var(--text);
+}
+
+.theme-icon {
+    position: absolute;
+    inset: 0;
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+    transition: opacity 0.15s ease;
+}
+
+/* CSS-driven icon visibility — avoids JS-dependent flash on load */
+.sun-icon  { opacity: 0; }
+.moon-icon { opacity: 1; }
+[data-theme="dark"] .sun-icon  { opacity: 1; }
+[data-theme="dark"] .moon-icon { opacity: 0; }
+
+/* Suppress all transitions during initial paint so no theme-change animation fires */
+.no-transitions * { transition: none !important; }
+
+
+/* ============================================================
+   CONTENT
+   ============================================================ */
+.content {
+    display: grid;
+    grid-column: full-start / full-end;
+    grid-template-columns: subgrid;
+    margin-top: var(--space);
+}
+
+.content > * {
+    grid-column: narrow-start / narrow-end;
+}
+
+/* Inline hyperlinks: static highlight, cycling through the accent palette */
+.content a {
+    padding: 0 2px;
+    transition: background-color 0.15s ease;
+}
+
+.content a:nth-child(5n+1) { background-color: var(--accent-1); }
+.content a:nth-child(5n+2) { background-color: var(--accent-2); }
+.content a:nth-child(5n+3) { background-color: var(--accent-3); }
+.content a:nth-child(5n+4) { background-color: var(--accent-4); }
+.content a:nth-child(5n)   { background-color: var(--accent-5); }
+
+.content a:nth-child(5n+1):hover { background-color: var(--accent-1-hover); }
+.content a:nth-child(5n+2):hover { background-color: var(--accent-2-hover); }
+.content a:nth-child(5n+3):hover { background-color: var(--accent-3-hover); }
+.content a:nth-child(5n+4):hover { background-color: var(--accent-4-hover); }
+.content a:nth-child(5n):hover   { background-color: var(--accent-5-hover); }
+
+
+/* ============================================================
+   POST ROW  (shared by homepage widget and /writing page)
+   ============================================================ */
+.post-list-year {
+    list-style: none;
+    padding: 0;
+    grid-column: narrow-start / narrow-end;
+}
+
+.post-list-year li {
+    border-bottom: 1px solid var(--rule);
+}
+
+.post-list-year li:last-child,
+.post-list-year li.last-visible {
+    border-bottom: none;
+}
+
+.post-list-row {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.35rem 0;
+    color: inherit;
+}
+
+.post-list-title {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    font-weight: 400;
+    flex: 1;
+    padding: 0 3px;
+    color: var(--muted);
+    transition: color 0.15s ease;
+}
+
+@media (hover: hover) {
+    .post-list-title:hover {
+        color: var(--text);
+    }
+}
+
+.post-list-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-shrink: 0;
+}
+
+/* ---- Canonical tag → colour mapping (single source of truth) ----
+   Any element with a matching data-tag inherits --tag-bg (+ a deepened
+   --tag-bg-hover); tag chips read both. To add a topic: extend the `tag`
+   enum in content.config.ts and add a line here. */
+[data-tag="politics"]    { --tag-bg: var(--accent-1); --tag-bg-hover: var(--accent-1-hover); }
+[data-tag="Fiction"]     { --tag-bg: var(--accent-1); --tag-bg-hover: var(--accent-1-hover); }
+[data-tag="Programming"] { --tag-bg: var(--accent-2); --tag-bg-hover: var(--accent-2-hover); }
+[data-tag="Film"]        { --tag-bg: var(--accent-2); --tag-bg-hover: var(--accent-2-hover); }
+[data-tag="History"]     { --tag-bg: var(--accent-3); --tag-bg-hover: var(--accent-3-hover); }
+[data-tag="Review"]      { --tag-bg: var(--accent-3); --tag-bg-hover: var(--accent-3-hover); }
+[data-tag="data"]        { --tag-bg: var(--accent-4); --tag-bg-hover: var(--accent-4-hover); }
+[data-tag="Music"]       { --tag-bg: var(--accent-4); --tag-bg-hover: var(--accent-4-hover); }
+[data-tag="Essay"]       { --tag-bg: var(--accent-5); --tag-bg-hover: var(--accent-5-hover); }
+
+.post-list-date {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--muted);
+    flex-shrink: 0;
+    min-width: 4ch;
+    text-align: right;
+}
+
+.expand-btn {
+    display: none;
+    align-items: center;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--muted);
+    flex-shrink: 0;
+    transition: color 0.15s ease;
+}
+
+.expand-btn svg {
+    width: 12px;
+    height: 12px;
+    transition: transform 0.2s ease;
+}
+
+.expand-btn[aria-expanded="true"] svg {
+    transform: rotate(180deg);
+}
+
+.post-list-desc {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--muted);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    padding: 0 3px;
+    transition: max-height 0.25s ease, opacity 0.2s ease, padding 0.25s ease;
+}
+
+.post-list-desc.visible {
+    max-height: 10rem;
+    opacity: 1;
+    padding: 0.3rem 3px 0.5rem;
+}
+
+
+/* ============================================================
+   POST LIST WIDGET  (homepage only)
+   ============================================================ */
+.post-list-widget {
+    margin-top: calc(var(--space) * 1.5);
+    display: flex;
+    flex-direction: column;
+    /* align-items: flex-end;
+    justify-content: center; */
+}
+
+.view-all {
+    display: inline-block;
+    margin-top: calc(var(--space) * 0.8);
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--muted);
+    transition: color 0.15s ease;
+}
+
+.view-all:hover {
+    color: var(--text);
+}
+
+
+
+.post-sidebar {
+    grid-column: narrow-end / wide-end;
+    position: sticky;
+    top: var(--space);
+    min-height:8rem;
+    align-self: start;
+
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--muted);
+    line-height: 1.4;
+    padding-left: 2rem;
+    margin-top: calc(var(--space) * 1.8);
+}
+
+
+/* ============================================================
+   READING
+   ============================================================ */
+.reading-section {
+    grid-column: narrow-start / narrow-end;
+    margin-top: calc(var(--space) * 1.5);
+}
+
+.reading-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: var(--space);
+}
+
+.book-grid {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--space);
+}
+
+.book {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.book-cover {
+    aspect-ratio: 2 / 3;
+    border-radius: 3px;
+    overflow: hidden;
+    background: var(--rule);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+@media (hover: hover) {
+    .book:hover .book-cover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    }
+}
+
+.book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.book-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    line-height: 1.3;
+}
+
+.book-title {
+    font-style: italic;
+    font-size: var(--text-sm);
+}
+
+.book-author {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--muted);
+}
+
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer {
+    /* margin-top: calc(var(--space) * 2); */
+    padding-block: calc(var(--space) * 1.5);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+}
+
+.footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--space);
+    border-top: 1px solid var(--rule);
+}
+
+.footer-name {
+    color: var(--muted);
+}
+
+.footer-links {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.footer-links a {
+    color: var(--muted);
+    transition: color 0.15s ease;
+}
+
+.footer-links a:hover {
+    color: var(--text);
+}
+
+.footer-links span {
+    color: var(--rule);
+    user-select: none;
+}
+
+.footer-rss {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+
+/* ============================================================
+   RESPONSIVE — ≤ 1024px
+   ============================================================ */
+@media (max-width: 1024px) {
+    .grid {
+        grid-template-columns:
+            [full-start] 1.25rem [wide-start narrow-start] minmax(0, 1fr) [narrow-end wide-end] 1.25rem [full-end];
+    }
+
+    .post-list-year {
+        grid-column: 1;
+    }
+
+    .post-sidebar {
+        display: none;
+    }
+
+    .expand-btn {
+        display: inline-flex;
+    }
+
+}
+
+
+/* ============================================================
+   RESPONSIVE — ≤ 640px
+   ============================================================ */
+@media (max-width: 640px) {
+    body {
+        padding-top: 1.25rem;
+    }
+
+    .grid {
+        grid-template-columns:
+            [full-start] 1rem [wide-start narrow-start] minmax(0, 1fr) [narrow-end wide-end] 1rem [full-end];
+    }
+
+    nav {
+        margin-bottom: calc(var(--space) * 1.5);
+    }
+
+    .navbar {
+        justify-content: flex-start;
+        gap: 1rem;
+    }
+
+    .nav-links {
+        gap: 1rem;
+    }
+}

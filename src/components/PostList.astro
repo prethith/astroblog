@@ -1,0 +1,163 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+    posts: CollectionEntry<'posts'>[];
+    variant?: 'full' | 'compact';
+    showFilter?: boolean;
+}
+
+const { posts, variant = 'compact', showFilter = true } = Astro.props;
+
+const postsByYear: Record<number, CollectionEntry<'posts'>[]> = variant === 'full'
+    ? posts.reduce((acc, post) => {
+        const year = post.data.pubDate.getFullYear();
+        if (!acc[year]) acc[year] = [];
+        acc[year].push(post);
+        return acc;
+    }, {} as Record<number, CollectionEntry<'posts'>[]>)
+    : {};
+
+const years = Object.keys(postsByYear).map(Number).sort((a, b) => b - a);
+
+// Tags actually used by these posts, with counts — drives the filter UI.
+const tagCounts = posts.reduce((acc, post) => {
+    for (const t of post.data.tags) acc[t] = (acc[t] ?? 0) + 1;
+    return acc;
+}, {} as Record<string, number>);
+const filterTags = Object.keys(tagCounts).sort((a, b) => a.localeCompare(b));
+---
+
+{variant === 'full' && showFilter && (
+    <div class="tag-filter" role="group" aria-label="Filter by topic">
+        <button class="tag-btn active" data-tag="all">all</button>
+        {filterTags.map(tag => (
+            <>
+                <span class="tag-sep" aria-hidden="true">·</span>
+                <button class="tag-btn" data-tag={tag}>{tag}<sup class="tag-btn-count">{tagCounts[tag]}</sup></button>
+            </>
+        ))}
+    </div>
+)}
+
+{variant === 'full' ? (
+    <div class="post-list" id="writing-list">
+        {years.map(year => (
+            <div class="post-list-group" data-year={String(year)}>
+                <span class="post-list-group-label" aria-hidden="true">{year}</span>
+                <ul class="post-list-year">
+                    {postsByYear[year].map(post => {
+                        const date = post.data.pubDate.toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                        });
+                        return (
+                            <li data-tags={post.data.tags.join(' ')} data-desc={post.data.description}>
+                                <div class="post-list-row">
+                                    <a href={`/writing/${post.id}`} class="post-list-title">{post.data.title}</a>
+                                    <span class="post-list-meta">
+                                        <time class="post-list-date">{date}</time>
+                                    </span>
+                                    <button class="expand-btn" aria-label="Show description" aria-expanded="false">
+                                        <svg width="12" height="12"><use href="#icon-chevron-down" /></svg>
+                                    </button>
+                                </div>
+                                <p class="post-list-desc">{post.data.description}</p>
+                            </li>
+                        );
+                    })}
+                </ul>
+            </div>
+        ))}
+    </div>
+) : (
+    <div class="post-list-widget">
+        <ul class="post-list-year" id="post-list">
+            {posts.map(post => {
+                const date = post.data.pubDate.getFullYear().toString();
+                return (
+                    <li data-tags={post.data.tags.join(' ')} data-desc={post.data.description}>
+                        <div class="post-list-row">
+                            <a href={`/writing/${post.id}`} class="post-list-title">{post.data.title}</a>
+                            <span class="post-list-meta">
+                                <time class="post-list-date">{date}</time>
+                            </span>
+                            <button class="expand-btn" aria-label="Show description" aria-expanded="false">
+                                <svg width="12" height="12"><use href="#icon-chevron-down" /></svg>
+                            </button>
+                        </div>
+                        <p class="post-list-desc">{post.data.description}</p>
+                    </li>
+                );
+            })}
+        </ul>
+        <a href="/writing" class="view-all">view all writing</a>
+    </div>
+)}
+
+<aside class="post-sidebar" aria-live="polite">
+    <p>Select a post</p>
+</aside>
+
+<script>
+    const sidebar = document.querySelector<HTMLElement>('.post-sidebar');
+    const isMobile = () => window.innerWidth <= 1024;
+
+    // Sidebar hover + expand buttons — both variants
+    document.querySelectorAll<HTMLLIElement>('#writing-list li[data-tags], #post-list li[data-tags]').forEach(li => {
+        const row = li.querySelector('.post-list-row')!;
+        const text = li.dataset.desc!;
+        const desc = li.querySelector<HTMLElement>('.post-list-desc');
+        const btn = li.querySelector<HTMLButtonElement>('.expand-btn');
+
+        row.addEventListener('mouseenter', () => {
+            if (isMobile() || !sidebar) return;
+            sidebar.innerHTML = `<p>${text}</p>`;
+        });
+        row.addEventListener('mouseleave', () => {
+            if (isMobile() || !sidebar) return;
+            sidebar.innerHTML = '<p>Select a post</p>';
+        });
+
+        btn?.addEventListener('click', () => {
+            const expanded = btn.getAttribute('aria-expanded') === 'true';
+            btn.setAttribute('aria-expanded', String(!expanded));
+            desc?.classList.toggle('visible', !expanded);
+        });
+    });
+
+    // Tag filter — full variant only
+    const filterBtns = document.querySelectorAll<HTMLButtonElement>('.tag-btn');
+    if (filterBtns.length > 0) {
+        const allItems = document.querySelectorAll<HTMLElement>('#writing-list li[data-tags]');
+        const yearGroups = document.querySelectorAll<HTMLElement>('.post-list-group');
+
+        function updateLastVisible() {
+            yearGroups.forEach(group => {
+                const items = [...group.querySelectorAll<HTMLElement>('li[data-tags]')];
+                items.forEach(li => li.classList.remove('last-visible'));
+                const last = items.filter(li => !li.hidden).at(-1);
+                if (last) last.classList.add('last-visible');
+            });
+        }
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const tag = btn.dataset.tag!;
+                allItems.forEach(li => {
+                    const tags = li.dataset.tags!.split(' ');
+                    li.hidden = tag !== 'all' && !tags.includes(tag);
+                });
+                yearGroups.forEach(group => {
+                    const visible = [...group.querySelectorAll<HTMLElement>('li[data-tags]')]
+                        .some(li => !li.hidden);
+                    group.hidden = !visible;
+                });
+                updateLastVisible();
+            });
+        });
+    }
+
+</script>
